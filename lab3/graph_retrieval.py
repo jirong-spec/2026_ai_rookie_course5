@@ -34,14 +34,20 @@ def extract_entities(question:str)->List[str]:
     except Exception:
         return []
 
-def fetch_subgraph(entities:List[str], max_hop:int=2):
+def fetch_subgraph(entities:List[str], max_hop:int=1):
     if not entities: return []
     # TODO 1: 撰寫 Cypher 查詢，以 entities 為起點擴展 1~max_hop 步的子圖
     # 要求：
     #   - MATCH p=(n)-[*1..max_hop]-(m)   ← 用 .format(k=max_hop) 嵌入 hop 數
     #   - WHERE n.name IN $ents
     #   - RETURN p LIMIT 50
-    query = ""  # <-- 請撰寫 Cypher 查詢
+    query = f"""
+    MATCH p=(n)-[*1..{max_hop}]-(m)
+    WHERE n.name IN $ents
+    RETURN p
+    LIMIT 50
+    """
+
     with driver.session() as s:
         records=s.run(query,ents=entities)
         triples=[]
@@ -56,7 +62,22 @@ def qa_graph(question:str):
     context="\n".join(triples) if triples else "（查無相關圖譜）"
     # TODO 2: 撰寫 prompt，將圖譜三元組（context）當作上下文，讓 LLM 根據這些關係回答問題
     # 提示：prompt 應包含：(1) 已知的圖譜關係 (2) 使用者的問題 (3) 要求 LLM 根據上下文回答
-    prompt = ""  # <-- 請撰寫你的 prompt（用 f-string 嵌入 context 和 question）
+    prompt = f"""
+你是一個根據知識圖譜回答問題的助手。
+
+以下是已知的圖譜關係：
+{context}
+
+使用者問題：
+{question}
+
+請根據上面的圖譜關係回答問題。
+要求：
+1. 只能根據提供的圖譜關係作答，不要使用外部知識。
+2. 如果圖譜關係不足以回答，就回答：「我不知道」。
+3. 回答要簡潔、清楚。
+"""
+
     messages = [
         {"role": "user", "content": prompt}
     ]
