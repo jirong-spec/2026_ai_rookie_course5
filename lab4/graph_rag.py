@@ -22,36 +22,39 @@ driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j","password12
 
 # ------- functions ----------
 def candidate_entities(question:str, k:int=4):
-    # TODO 1: 用向量搜尋找出候選實體
-    # 步驟：
-    #   1. 使用 vectordb.similarity_search(question, k=k) 取得相關文件
-    #   2. 用 re.findall(r'[A-Z][A-Za-z]+', d.page_content) 從每份文件中提取大寫開頭的詞
-    #   3. 收集到 set 中去重，最後回傳前 5 個
-    return []  # <-- 請替換這行
+    docs = vectordb.similarity_search(question, k=k)
+    ent = set()
+    for d in docs:
+        for tok in re.findall(r'[A-Z][A-Za-z]+', d.page_content):
+            ent.add(tok)
+    return list(ent)[:5]
 
 def graph_expand(ents, hop=2):
     if not ents: return []
-    # TODO 2: 撰寫 Cypher 查詢並從結果中提取三元組
-    # 步驟：
-    #   1. 撰寫 Cypher：MATCH p=(n)-[*1..{hop}]-(m) WHERE n.name IN $ents RETURN p LIMIT 100
-    #      用 f-string 嵌入 hop
-    #   2. 用 driver.session() 執行查詢（參數 ents=ents）
-    #   3. 從每個 record 的 r["p"].relationships 中提取三元組字串
-    #      格式：f"({rel.start_node['name']})-[:{rel.type}]->({rel.end_node['name']})"
-    #   4. 去重後回傳 list
-    return []  # <-- 請替換這行
+    query = f"""
+    MATCH p=(n)-[*1..{hop}]-(m)
+    WHERE n.name IN $ents
+    RETURN p LIMIT 100
+    """
+    with driver.session() as s:
+        recs = s.run(query, ents=ents)
+        triples = set()
+        for r in recs:
+            for rel in r["p"].relationships:
+                triples.add(f"({rel.start_node['name']})-[:{rel.type}]->({rel.end_node['name']})")
+    return list(triples)
 
 def answer_with_graph(question:str):
     ents=candidate_entities(question)
     triples=graph_expand(ents)
     context="\n".join(triples) if triples else "（圖譜中找不到相關關係）"
-    # TODO 3: 撰寫 prompt，讓 LLM 根據圖譜三元組回答問題
-    # 要求：
-    #   - 角色設定為「企業知識專家」
-    #   - 只能根據圖譜關係（context）回答
-    #   - 若資訊不足回答「無足夠資訊」
-    #   - 以繁體中文回答
-    prompt = ""  # <-- 請撰寫你的 prompt（用 f-string 嵌入 context 和 question）
+    prompt = (
+        "你是一位企業知識專家，只能根據下列圖譜關係回答問題，"
+        "若資訊不足請回答「無足夠資訊」。\n"
+        f"圖譜：\n{context}\n\n"
+        f"問題：{question}\n"
+        "答案（繁體中文）："
+    )
     return llm.invoke(prompt).content.strip(), triples, ents
 
 if __name__=="__main__":

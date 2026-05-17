@@ -63,31 +63,31 @@ python graph_rag.py
 | 聯盟關係 | Acme 與哪些公司是 partners_with？ |
 | 自我檢核 | 與 `reference/kg_triples.answer.txt` 比對你漏寫或寫錯的邊 |
 
-## 程式填空（TODO）
+## 實作狀態
 
-Lab 5 有多個檔案包含 `TODO`，共 5 個需要你完成：
+Lab 5 共 5 個 TODO，目前進度：
 
 ### `extract_triples_from_corpus.py`
 
-| TODO | 要完成的事 | 提示 |
-|------|-----------|------|
-| TODO 1 | 撰寫 `EXTRACTION_PROMPT` | 設計一個 prompt 讓 LLM 從繁中語料中抽取五種句式的三元組。可參考 `docs/kg_triples.template.txt` 了解合法格式。記得保留 `__CORPUS__` 佔位符 |
-| TODO 2 | 實作 `filter_parsable()` | 對每行呼叫 `parse()` 判斷是否合法，合法且未重複的放入 `good`，不合法的放入 `bad` |
+| TODO | 說明 | 狀態 |
+|------|------|------|
+| TODO 1 | 撰寫 `EXTRACTION_PROMPT`，讓 LLM 從語料抽取合法三元組（需保留 `__CORPUS__` 佔位符） | ⬜ 待完成 |
+| TODO 2 | 實作 `filter_parsable()`：呼叫 `parse()` 過濾合法行並去重，回傳 `(good, bad)` | ⬜ 待完成 |
 
 ### `build_vector_index.py`
 
-| TODO | 要完成的事 | 提示 |
-|------|-----------|------|
-| TODO 3 | 建立 SemanticChunker 並存入 Chroma | 與 Lab 1 相同做法：建立 `SemanticChunker` → `split_documents()` → `Chroma.from_documents()` |
+| TODO | 說明 | 狀態 |
+|------|------|------|
+| TODO 3 | 建立 `SemanticChunker` → `split_documents()` → `Chroma.from_documents()`（與 Lab 1 相同做法） | ⬜ 待完成 |
 
 ### `graph_rag.py`
 
-| TODO | 要完成的事 | 提示 |
-|------|-----------|------|
-| TODO 4 | 實作 `candidate_entities()` | 與 Lab 4 相同邏輯，但 `k=6`、回傳上限 8 個實體 |
-| TODO 5 | 實作 `graph_expand()` | 與 Lab 4 相同邏輯，但 `LIMIT 120` |
+| TODO | 完成內容 | 狀態 |
+|------|---------|------|
+| TODO 4 | `candidate_entities(k=6)`：向量搜尋 + 正則抽實體，回傳前 8 個 | ✅ 完成 |
+| TODO 5 | `graph_expand()`：Cypher `MATCH p=(n)-[*1..{hop}]-(m) WHERE n.name IN $ents RETURN p LIMIT 120` | ✅ 完成 |
 
-建議按照「建議操作順序」依序完成並測試。
+建議按照「建議操作順序」依序完成 TODO 1→2→3，再執行完整 pipeline。
 
 ## 作業建議
 

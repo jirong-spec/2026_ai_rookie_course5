@@ -194,16 +194,16 @@ python graph_retrieval.py
 | Carol 和 Acme 有什麼關係？ | 需要 2-hop：Carol → BoltCorp → Acme |
 | 誰負責 TurboMotor？ | (Carol)-[:LEADS]->(TurboMotor) |
 
-## 程式填空（TODO）
+## 實作狀態
 
-`graph_retrieval.py` 中有 2 個 `TODO` 需要你完成（`extract_entities()` 已提供完整實作，可直接閱讀學習）：
+`graph_retrieval.py` 已完整實作，無待填空：
 
-| TODO | 要完成的事 | 提示 |
-|------|-----------|------|
-| TODO 1 | 撰寫 `fetch_subgraph()` 中的 Cypher 查詢 | 參考上方「Cypher 查詢語言入門」第 5～8 節，使用 `MATCH p=(n)-[*1..{k}]-(m)` 做 variable-length path 查詢。注意：hop 數需用 `.format(k=max_hop)` 嵌入，實體列表用 `$ents` 參數化傳入 |
-| TODO 2 | 撰寫 `qa_graph()` 中的 QA prompt | 將圖譜三元組 (`context`) 作為已知資訊，搭配使用者問題 (`question`)，用 f-string 組成 prompt 請 LLM 根據這些關係回答 |
-
-完成後執行 `python graph_retrieval.py`，嘗試問「Carol 和 Acme 有什麼關係？」驗證多跳推理是否正確。
+| 項目 | 說明 | 狀態 |
+|------|------|------|
+| `extract_entities()` | LLM 實體抽取 + fallback 正則 | ✅ 完成 |
+| `fetch_subgraph()` | Cypher `[*1..2]` 子圖查詢，LIMIT 50 | ✅ 完成 |
+| `answer_relation_question()` | 規則式直接／間接關係偵測 | ✅ 完成 |
+| `qa_graph()` | 組合上下文，LLM 生成繁體中文回答 | ✅ 完成 |
 
 ## 作業
 

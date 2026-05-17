@@ -10,6 +10,8 @@ PATTERNS = [
     (r"^(.+?) partners_with (.+?)\.$", ("Company","PARTNERS_WITH","Company")),
     (r"^(.+?) supplies (.+?) to (.+?)\.$", ("Company","SUPPLIES","Company")),
     (r"^(.+?) leads (.+?)\.$", ("Person","LEADS","Product"))
+,
+    (r"^(.+?) manages (.+?)\.$", ("Person","MANAGES","Person"))
 ]
 
 def parse(line:str):

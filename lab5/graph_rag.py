@@ -25,17 +25,29 @@ driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "password1
 
 
 def candidate_entities(question: str, k: int = 6):
-    # TODO 4: 從向量搜尋結果中提取候選實體（與 Lab 4 相同邏輯，但 k=6、上限 8）
-    # 使用 vectordb.similarity_search() 搜尋，再用正則 r'[A-Z][A-Za-z]+' 提取實體
-    return []  # <-- 請替換這行
+    docs = vectordb.similarity_search(question, k=k)
+    ent = set()
+    for d in docs:
+        for tok in re.findall(r'[A-Z][A-Za-z]+', d.page_content):
+            ent.add(tok)
+    return list(ent)[:8]
 
 
 def graph_expand(ents, hop=2):
     if not ents:
         return []
-    # TODO 5: 撰寫 Cypher 查詢並提取三元組（與 Lab 4 相同邏輯，LIMIT 120）
-    # 提示：MATCH p=(n)-[*1..{hop}]-(m) WHERE n.name IN $ents RETURN p LIMIT 120
-    return []  # <-- 請替換這行
+    query = f"""
+    MATCH p=(n)-[*1..{hop}]-(m)
+    WHERE n.name IN $ents
+    RETURN p LIMIT 120
+    """
+    with driver.session() as s:
+        recs = s.run(query, ents=ents)
+        triples = set()
+        for r in recs:
+            for rel in r["p"].relationships:
+                triples.add(f"({rel.start_node['name']})-[:{rel.type}]->({rel.end_node['name']})")
+    return list(triples)
 
 
 def answer_with_graph(question: str):

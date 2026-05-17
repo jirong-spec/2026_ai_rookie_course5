@@ -19,19 +19,24 @@ emb = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
 # TODO 1: 建立 SemanticChunker
 # 使用 emb 作為 embedding，breakpoint_threshold_type="percentile"，breakpoint_threshold_amount=90
 # 然後呼叫 split_documents(docs) 取得切分結果
-splitter = None  # <-- 請替換這行
-splits = []      # <-- 請替換這行
+splitter = SemanticChunker(
+    emb,
+    breakpoint_threshold_type="percentile",
+    breakpoint_threshold_amount=90,
+)
+# docs 是由 TextLoader 載入的 Document 列表
+splits = splitter.split_documents(docs)
 print(f"SemanticChunker：{len(splits)} 個 chunk")
 
 # 2) Embedding + VectorStore
 # TODO 2: 使用 Chroma.from_documents() 建立向量資料庫
 # 參數：splits, emb, persist_directory="chroma_store"
-vectordb = None  # <-- 請替換這行
+vectordb = Chroma.from_documents(splits, emb, persist_directory="chroma_store")  
 
 # 3) 建立 RAG Chain
 # TODO 3: 使用 RetrievalQA.from_chain_type() 建立 RAG Chain
 # 參數：llm, retriever=vectordb.as_retriever(k=4), chain_type="stuff"
-qa = None  # <-- 請替換這行
+qa = RetrievalQA.from_chain_type(llm, retriever=vectordb.as_retriever(k=4), chain_type="stuff") 
 
 while True:
     q = input("提問 (enter 離開)：")

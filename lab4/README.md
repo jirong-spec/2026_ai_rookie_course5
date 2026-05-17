@@ -66,17 +66,15 @@ python graph_rag.py
 | TurboMotor 的負責人在哪間公司？ | 需要多跳：TurboMotor → Carol → BoltCorp |
 | Acme 的供應鏈是怎樣的？ | 向量找到相關實體 → 圖譜擴展出完整供應鏈 |
 
-## 程式填空（TODO）
+## 實作狀態
 
-`graph_rag.py` 中有 3 個 `TODO` 需要你完成：
+`graph_rag.py` 的 3 個 TODO 已全數完成：
 
-| TODO | 要完成的事 | 提示 |
-|------|-----------|------|
-| TODO 1 | 實作 `candidate_entities()` | 使用 `vectordb.similarity_search()` 取得相關文件，再用 `re.findall(r'[A-Z][A-Za-z]+', ...)` 提取候選實體名稱，收集到 `set` 去重後回傳前 5 個 |
-| TODO 2 | 實作 `graph_expand()` | 撰寫 Cypher 做 variable-length path 查詢（`[*1..{hop}]`），執行後從 `r["p"].relationships` 中提取三元組字串 |
-| TODO 3 | 撰寫 `answer_with_graph()` 的 prompt | 將圖譜三元組作為上下文，設定角色為「企業知識專家」，要求只根據圖譜回答、資訊不足時說明 |
-
-完成後執行 `python graph_rag.py`，嘗試問「TurboMotor 的負責人在哪間公司？」測試多跳推理。
+| TODO | 完成內容 | 狀態 |
+|------|---------|------|
+| TODO 1 | `candidate_entities()`：`similarity_search(k=4)` → 正則 `[A-Z][A-Za-z]+` → `set` 去重 → 前 5 個 | ✅ 完成 |
+| TODO 2 | `graph_expand()`：Cypher `MATCH p=(n)-[*1..{hop}]-(m) WHERE n.name IN $ents RETURN p LIMIT 100`，提取三元組字串集合 | ✅ 完成 |
+| TODO 3 | `answer_with_graph()` prompt：角色設定為企業知識專家，只依圖譜回答，資訊不足回覆「無足夠資訊」，繁體中文 | ✅ 完成 |
 
 ## 作業
 

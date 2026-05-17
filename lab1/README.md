@@ -89,17 +89,15 @@ python vector_rag.py
 - `Acme 生產什麼？`
 - `誰負責 TurboMotor？`
 
-## 程式填空（TODO）
+## 實作狀態
 
-`vector_rag.py` 中有 3 個 `TODO` 需要你完成：
+`vector_rag.py` 的 3 個 TODO 已全數完成：
 
-| TODO | 要完成的事 | 提示 |
-|------|-----------|------|
-| TODO 1 | 建立 `SemanticChunker` 並切分文件 | 參考上方「SemanticChunker 參數說明」與「使用範例」，傳入 `emb` 與門檻參數後呼叫 `split_documents(docs)` |
-| TODO 2 | 建立 Chroma 向量資料庫 | `Chroma.from_documents(splits, emb, persist_directory="chroma_store")` |
-| TODO 3 | 建立 RAG Chain | `RetrievalQA.from_chain_type(llm, retriever=vectordb.as_retriever(k=4), chain_type="stuff")` |
-
-完成後執行 `python vector_rag.py`，若能進入互動問答模式即代表 TODO 全數正確。
+| TODO | 完成內容 | 狀態 |
+|------|---------|------|
+| TODO 1 | 建立 `SemanticChunker(emb, breakpoint_threshold_type="percentile", breakpoint_threshold_amount=90)` 並呼叫 `split_documents(docs)` | ✅ 完成 |
+| TODO 2 | `Chroma.from_documents(splits, emb, persist_directory="chroma_store")` | ✅ 完成 |
+| TODO 3 | `RetrievalQA.from_chain_type(llm, retriever=vectordb.as_retriever(k=4), chain_type="stuff")` | ✅ 完成 |
 
 ## 作業
 
