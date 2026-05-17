@@ -21,7 +21,7 @@ Embedding：`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
 | [Lab 2](lab2/README.md) | Graph 建置 | 正則解析三元組 → Neo4j MERGE | ✅ 完成 |
 | [Lab 3](lab3/README.md) | Graph 查詢 | LLM 實體抽取 + 2-hop Cypher + 規則回答 | ✅ 完成 |
 | [Lab 4](lab4/README.md) | Graph RAG | 向量搜尋候選實體 → 圖譜展開 → LLM 生成 | ✅ 完成 |
-| [Lab 5](lab5/README.md) | Hybrid Graph RAG | LLM 抽取三元組 + 多語料向量索引（TODO 1-3 待完成） | 🔄 部分完成 |
+| [Lab 5](lab5/README.md) | Hybrid Graph RAG | LLM 抽取三元組 + 多語料向量索引 | ✅ 完成 |
 | [Lab 6](lab6/README.md) | Guardrailed RAG | 四道防護：注入偵測、主題過濾、證據充足、事實查核 | ✅ 完成 |
 
 ## 架構總覽
@@ -94,10 +94,6 @@ Lab 0
 | `X leads Y` | LEADS | Carol leads TurboMotor. |
 | `X manages Y` | MANAGES | Dave manages Bob. |
 
-## 待完成項目
+## 實作狀態
 
-Lab 5 中以下 TODO 尚未實作：
-
-- `extract_triples_from_corpus.py` — TODO 1：撰寫 `EXTRACTION_PROMPT`
-- `extract_triples_from_corpus.py` — TODO 2：實作 `filter_parsable()`
-- `build_vector_index.py` — TODO 3：建立 SemanticChunker + Chroma 索引
+所有 Lab（0–6）的 TODO 均已完成。

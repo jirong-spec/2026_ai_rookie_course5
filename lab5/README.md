@@ -69,16 +69,16 @@ Lab 5 共 5 個 TODO，目前進度：
 
 ### `extract_triples_from_corpus.py`
 
-| TODO | 說明 | 狀態 |
-|------|------|------|
-| TODO 1 | 撰寫 `EXTRACTION_PROMPT`，讓 LLM 從語料抽取合法三元組（需保留 `__CORPUS__` 佔位符） | ⬜ 待完成 |
-| TODO 2 | 實作 `filter_parsable()`：呼叫 `parse()` 過濾合法行並去重，回傳 `(good, bad)` | ⬜ 待完成 |
+| TODO | 完成內容 | 狀態 |
+|------|---------|------|
+| TODO 1 | `EXTRACTION_PROMPT`：角色設定為知識圖譜抽取助手，列出五種句式與中文關鍵詞對應，要求只輸出純英文句子 | ✅ 完成 |
+| TODO 2 | `filter_parsable()`：呼叫 `parse()` 判斷合法性，去重後回傳 `(good, bad)` | ✅ 完成 |
 
 ### `build_vector_index.py`
 
-| TODO | 說明 | 狀態 |
-|------|------|------|
-| TODO 3 | 建立 `SemanticChunker` → `split_documents()` → `Chroma.from_documents()`（與 Lab 1 相同做法） | ⬜ 待完成 |
+| TODO | 完成內容 | 狀態 |
+|------|---------|------|
+| TODO 3 | `SemanticChunker(emb, percentile, 90)` → `split_documents()` → `Chroma.from_documents(persist_directory=chroma_store)` | ✅ 完成 |
 
 ### `graph_rag.py`
 
@@ -86,8 +86,6 @@ Lab 5 共 5 個 TODO，目前進度：
 |------|---------|------|
 | TODO 4 | `candidate_entities(k=6)`：向量搜尋 + 正則抽實體，回傳前 8 個 | ✅ 完成 |
 | TODO 5 | `graph_expand()`：Cypher `MATCH p=(n)-[*1..{hop}]-(m) WHERE n.name IN $ents RETURN p LIMIT 120` | ✅ 完成 |
-
-建議按照「建議操作順序」依序完成 TODO 1→2→3，再執行完整 pipeline。
 
 ## 作業建議
 

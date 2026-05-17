@@ -19,17 +19,32 @@ os.environ["OPENAI_API_KEY"] = "EMPTY"
 os.environ["OPENAI_API_BASE"] = "http://localhost:8299/v1"
 LLM_MODEL = "Qwen2.5-3B-Instruct"
 
-# TODO 1: 撰寫 EXTRACTION_PROMPT — 讓 LLM 從語料中抽取三元組
-# 這個 prompt 需要：
-#   - 說明角色（知識圖譜抽取助手）
-#   - 列出五種合法句式：works_at, produces, partners_with, supplies...to, leads
-#   - 設定規則：只輸出純英文句子、不推測、不加編號說明
-#   - 在適當位置放入 __CORPUS__（稍後會被語料內容取代）
-#   - 提供中文關鍵詞到英文關係的對應提示（例如「策略聯盟」→ partners_with）
-# 可參考 docs/kg_triples.template.txt 了解五種句式的格式
-EXTRACTION_PROMPT = """
+EXTRACTION_PROMPT = """你是一個知識圖譜抽取助手。請從以下語料中抽取所有可識別的事實，並以下列五種英文句式輸出，每行一句、句尾加英文句點。
+
+合法句式（嚴格遵守，不得使用其他格式）：
+  Person works_at Company.
+  Company produces Product.
+  Company partners_with Company.
+  Company supplies Product to Company.
+  Person leads Product.
+
+中文關鍵詞對應提示：
+  「任職」「擔任」「在...工作」 → works_at
+  「生產」「製造」「推出」「開發」 → produces
+  「策略聯盟」「合作夥伴」「合作」→ partners_with
+  「供應」「提供...給」 → supplies...to
+  「負責」「主導」「領導」 → leads
+
+規則：
+1. 只輸出純英文句子，不要輸出中文、說明文字、編號或 markdown。
+2. 實體名稱保留語料中的英文原文（大小寫一致）。
+3. 只抽取語料中明確陳述的事實，不推測或補充。
+4. 每行只輸出一句，句尾必須是英文句點。
+
+以下是語料：
 __CORPUS__
-"""  # <-- 請擴充這個 prompt
+
+請直接輸出三元組句子，不要有任何前言或說明："""
 
 
 def load_corpus() -> str:
@@ -68,14 +83,16 @@ def extract_raw_lines(llm_text: str) -> list[str]:
 
 
 def filter_parsable(lines: list[str]) -> tuple[list[str], list[str]]:
-    # TODO 2: 過濾出可被 parse() 解析的行，同時去重
-    # 步驟：
-    #   1. 對每一行呼叫 parse(line)（已從 triples_parse 匯入）
-    #   2. 若 parse 回傳非 None 且該行尚未出現過 → 加入 good
-    #   3. 若 parse 回傳 None → 加入 bad
-    #   4. 回傳 (good, bad) 兩個 list
     good, bad = [], []
-    return good, bad  # <-- 請實作過濾邏輯
+    seen = set()
+    for line in lines:
+        if parse(line) is not None:
+            if line not in seen:
+                seen.add(line)
+                good.append(line)
+        else:
+            bad.append(line)
+    return good, bad
 
 
 def main() -> None:

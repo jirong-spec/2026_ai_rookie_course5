@@ -27,15 +27,14 @@ def main() -> None:
         raise RuntimeError(f"{CORPUS_DIR} 內沒有任何 .txt 文件")
 
     emb = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
-    # TODO 3: 建立 SemanticChunker、切分文件、存入 Chroma
-    # 步驟：
-    #   1. 建立 SemanticChunker(emb, breakpoint_threshold_type="percentile", breakpoint_threshold_amount=90)
-    #   2. 呼叫 splitter.split_documents(docs) 取得 splits
-    #   3. 用 Chroma.from_documents(splits, emb, persist_directory=str(CHROMA_DIR)) 存入向量庫
-    # 提示：與 Lab 1 的做法相同
-    splits = []  # <-- 請替換
+    splitter = SemanticChunker(
+        emb,
+        breakpoint_threshold_type="percentile",
+        breakpoint_threshold_amount=90,
+    )
+    splits = splitter.split_documents(docs)
     print(f"載入 {len(docs)} 個檔案 → SemanticChunker 產生 {len(splits)} 個 chunk")
-    # <-- 請加入 Chroma.from_documents(...) 呼叫
+    Chroma.from_documents(splits, emb, persist_directory=str(CHROMA_DIR))
     print(f"已寫入：{CHROMA_DIR}")
 
 
